@@ -8,6 +8,7 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+# paginate questions
 def paginate(request, selection):
     page = request.args.get('page', 1, type=int)
     start = (page - 1) * QUESTIONS_PER_PAGE
@@ -70,6 +71,7 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
+    # GET endpoint for getting ist of questions, number of total questions, current category, categories
     @app.route('/questions', methods=['GET'])
     def get_questions():
         selection = Question.query.order_by(Question.id).all()
@@ -92,6 +94,7 @@ def create_app(test_config=None):
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
+    #DELETE endpoint to delete a question
     @app.route("/question/<int:question_id>", methods=["DELETE"])
     def delete_question(question_id):
         try:
@@ -126,6 +129,7 @@ def create_app(test_config=None):
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
     """
+    #endpoint to create a new question
     @app.route('/questions', methods=['POST'])
     def insert_question():
         body = request.get_json()
@@ -160,6 +164,7 @@ def create_app(test_config=None):
     only question that include that string within their question.
     Try using the word "title" to start.
     """
+    #endpoint to get questions based on a search term
     @app.route("/search", methods=['POST'])
     def search():
         body = request.get_json()
@@ -184,6 +189,7 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that
     category to be shown.
     """
+    #GET endpoint to get questions based on category
     @app.route('/categories/<int:cat_id>/questions', methods=['GET'])
     def get_questions_on_category(cat_id):
         category = Category.query.filter(
@@ -214,6 +220,7 @@ def create_app(test_config=None):
     one question at a time is displayed, the user is allowed to answer
     and shown whether they were correct or not.
     """
+    #POST endpoint to get questions to play the quiz.
     @app.route('/quizzes', methods=['POST'])
     def play():
         try:
@@ -289,7 +296,4 @@ def create_app(test_config=None):
 
     return app
 
-# if __name__=="__main__":
-#     myapp=create_app()
-#     myapp.run(debug=True)
 
