@@ -111,7 +111,7 @@ def create_app(test_config=None):
                 {
                     "success": True,
                     "deleted": question_id,
-                    "books": current_questions,
+                    "current_questions": current_questions,
                     "total_books": len(selection),
                 }
             )
@@ -229,23 +229,25 @@ def create_app(test_config=None):
             quiz_category = body.get('quiz_category', None)
             cat_id = quiz_category['id']
             if (quiz_category['id']== 0):
-                questions = Question.query.filter(
-                    Question.id.notin_(previous_questions)).all()
+                questions = Question.query.filter().all()
             else:
                 questions = Question.query.filter(
-                    Question.id.notin_(previous_questions),
                     Question.category == quiz_category['id']).all()
             question = None
-            if(questions):
-                question = random.choice(questions)
+            flag = 0
+            while(flag==0):
+                if(questions):
+                    question = random.choice(questions)
+                for x in previous_questions:
+                    if(x!=question):
+                        flag=1
 
             return jsonify({
                 'success': True,
-                'question': question.format()
-            })
-
+                'question': question.format()})
         except Exception:
             abort(422)
+
 
     """
     @TODO:
