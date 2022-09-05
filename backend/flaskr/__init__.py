@@ -47,7 +47,9 @@ def create_app(test_config=None):
     @app.route("/categories")
     def retrieve_categories():
         selection = Category.query.order_by(Category.id).all()
-        categories = [cat.format() for cat in selection]
+        categories = {}
+        for cat in selection:
+            categories[cat.id] = cat.type
         if len(categories) == 0:
             abort(404)
 
@@ -79,7 +81,9 @@ def create_app(test_config=None):
         if (len(questions) == 0):
             abort(404)
         CatSelection = Category.query.order_by(Category.id).all()
-        categories = [cat.format() for cat in CatSelection]
+        categories = {}
+        for cat in CatSelection:
+            categories[cat.id] = cat.type
         return jsonify({
             'success': True,
             'questions': questions,
@@ -220,28 +224,38 @@ def create_app(test_config=None):
     one question at a time is displayed, the user is allowed to answer
     and shown whether they were correct or not.
     """
+
+
     #POST endpoint to get questions to play the quiz.
     @app.route('/quizzes', methods=['POST'])
     def play():
         try:
+            print('hi!!')
             body = request.get_json()
             previous_questions = body.get('previous_questions', None)
             quiz_category = body.get('quiz_category', None)
             cat_id = quiz_category['id']
             if (quiz_category['id']== 0):
+                print('if!!')
                 questions = Question.query.filter().all()
             else:
+                print('else!!')
                 questions = Question.query.filter(
                     Question.category == quiz_category['id']).all()
             question = None
             flag = 0
-            while(flag==0):
-                if(questions):
-                    question = random.choice(questions)
-                for x in previous_questions:
-                    if(x!=question):
-                        flag=1
-
+            print('prev!!', previous_questions)
+            if(len(previous_questions)!=0):
+                while(flag==0):
+                    #print('in while!!')
+                    if(questions):
+                        question = random.choice(questions)
+                    for x in previous_questions:
+                        if(x!=question):
+                            flag=1
+            else:
+                question = random.choice(questions)
+            print("hey! called!! ", question.format())
             return jsonify({
                 'success': True,
                 'question': question.format()})
