@@ -67,18 +67,18 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "Page Not found")
     
-    # def test_delete_question(self):
-    #     res = self.client().delete('/questions/1')
-    #     data = json.loads(res.data)
-    #     self.assertEqual(res.status_code, 200)
-    #     self.assertEqual(data["success"], True)
+    def test_delete_question(self):
+        res = self.client().delete('/questions/1')
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
 
     def test_delete_question_not_found(self):
         res = self.client().delete('/questions/10000')
         data = json.loads(res.data)
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 422)
         self.assertEqual(data["success"], False)
-        self.assertEqual(data["message"], "Page Not found")
+        self.assertEqual(data["message"], "Unprocessable Entity")
 
     def test_create_new_question(self):
         res = self.client().post("/questions", json=self.new_question)
